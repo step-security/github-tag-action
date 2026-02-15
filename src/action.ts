@@ -2,6 +2,8 @@ import * as core from '@actions/core';
 import { gte, inc, parse, ReleaseType, SemVer, valid } from 'semver';
 import { analyzeCommits } from '@semantic-release/commit-analyzer';
 import { generateNotes } from '@semantic-release/release-notes-generator';
+// Direct import so ncc can statically bundle it (avoids dynamic require via preset name)
+import conventionalChangelogConventionalcommits from 'conventional-changelog-conventionalcommits';
 import {
   getBranchFromRef,
   isPr,
@@ -130,7 +132,7 @@ export default async function main() {
             mappedReleaseRules.map(({ section, ...rest }) => ({ ...rest }))
           : undefined,
       },
-      { commits, logger: { log: console.info.bind(console) } }
+      { commits, logger: { log: console.info.bind(console) }, cwd: process.cwd() }
     );
 
     // Determine if we should continue with tag creation based on main vs prerelease branch
@@ -191,16 +193,20 @@ export default async function main() {
   core.info(`New tag after applying prefix is ${newTag}.`);
   core.setOutput('new_tag', newTag);
 
+  // Load preset directly to avoid dynamic require (ncc compatibility)
+  const loadedPreset = await conventionalChangelogConventionalcommits({
+    types: mergeWithDefaultChangelogRules(mappedReleaseRules),
+  });
+
   const changelog = await generateNotes(
     {
-      preset: 'conventionalcommits',
-      presetConfig: {
-        types: mergeWithDefaultChangelogRules(mappedReleaseRules),
-      },
+      parserOpts: loadedPreset.parserOpts,
+      writerOpts: loadedPreset.writerOpts,
     },
     {
       commits,
       logger: { log: console.info.bind(console) },
+      cwd: process.cwd(),
       options: {
         repositoryUrl: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`,
       },

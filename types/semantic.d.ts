@@ -1,5 +1,10 @@
 /// <reference types="semver" />
 
+declare module 'conventional-changelog-conventionalcommits' {
+  function preset(config?: any): Promise<{ parserOpts: any; writerOpts: any }>;
+  export default preset;
+}
+
 declare module '@semantic-release/commit-analyzer' {
   export function analyzeCommits(
     config: {
@@ -18,6 +23,7 @@ declare module '@semantic-release/commit-analyzer' {
     args: {
       commits: { message: string; hash: string | null }[];
       logger: { log: (args: any) => void };
+      cwd?: string;
     }
   ): Promise<any>;
 }
@@ -41,6 +47,7 @@ declare module '@semantic-release/release-notes-generator' {
     args: {
       commits: { message: string; hash: string | null }[];
       logger: { log: (args: any) => void };
+      cwd?: string;
       options: {
         repositoryUrl: string;
       };

@@ -126,7 +126,3 @@ The default graphite width of 10mm is always used for performance reasons.
 </table>
 
 If no commit message contains any information, then **default_bump** will be used.
-
-## Credits
-
-[anothrNick/github-tag-action](https://github.com/anothrNick/github-tag-action) - a similar action using a Dockerfile (hence not working on macOS)

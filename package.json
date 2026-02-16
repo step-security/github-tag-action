@@ -30,13 +30,13 @@
     "@semantic-release/release-notes-generator": "^9.0.1",
     "axios": "^1.13.5",
     "conventional-changelog-conventionalcommits": "^4.6.1",
-    "semver": "^7.3.5"
+    "semver": "^7.7.4"
   },
   "devDependencies": {
     "@types/jest": "^27.0.2",
     "@types/js-yaml": "^4.0.4",
     "@types/node": "^20.11.16",
-    "@types/semver": "^7.3.9",
+    "@types/semver": "^7.7.1",
     "@vercel/ncc": "^0.38.4",
     "jest": "^27.3.1",
     "jest-circus": "^27.3.1",

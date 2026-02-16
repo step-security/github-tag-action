@@ -132,7 +132,11 @@ export default async function main() {
             mappedReleaseRules.map(({ section, ...rest }) => ({ ...rest }))
           : undefined,
       },
-      { commits, logger: { log: console.info.bind(console) }, cwd: process.cwd() }
+      {
+        commits,
+        logger: { log: console.info.bind(console) },
+        cwd: process.cwd(),
+      }
     );
 
     // Determine if we should continue with tag creation based on main vs prerelease branch

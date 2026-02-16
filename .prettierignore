@@ -1,0 +1,10 @@
+/.github/
+/.vscode/
+/lib/
+/dist/
+/.claude/
+/docs/
+/*.json
+/*.js
+/*.yml
+/*.md

@@ -1,0 +1,3 @@
+[[IgnoredVulns]]
+id = "GHSA-g9mf-h72j-4rw9"
+reason = "undici is a transitive dependency of @actions/github v6; and interacts with trusted servers. Resource exhaustion attack is very less likely in this context."

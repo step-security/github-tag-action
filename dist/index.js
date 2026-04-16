@@ -29,26 +29,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -61,173 +41,168 @@ const release_notes_generator_1 = __nccwpck_require__(4406);
 const conventional_changelog_conventionalcommits_1 = __importDefault(__nccwpck_require__(1612));
 const utils_1 = __nccwpck_require__(9277);
 const github_1 = __nccwpck_require__(6681);
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const defaultBump = core.getInput('default_bump');
-        const defaultPreReleaseBump = core.getInput('default_prerelease_bump');
-        const tagPrefix = core.getInput('tag_prefix');
-        const customTag = core.getInput('custom_tag');
-        const releaseBranches = core.getInput('release_branches');
-        const preReleaseBranches = core.getInput('pre_release_branches');
-        const appendToPreReleaseTag = core.getInput('append_to_pre_release_tag');
-        const createAnnotatedTag = /true/i.test(core.getInput('create_annotated_tag'));
-        const dryRun = core.getInput('dry_run');
-        const customReleaseRules = core.getInput('custom_release_rules');
-        const shouldFetchAllTags = core.getInput('fetch_all_tags');
-        const commitSha = core.getInput('commit_sha');
-        let mappedReleaseRules;
-        if (customReleaseRules) {
-            mappedReleaseRules = (0, utils_1.mapCustomReleaseRules)(customReleaseRules);
-        }
-        const { GITHUB_REF, GITHUB_SHA } = process.env;
-        if (!GITHUB_REF) {
-            core.setFailed('Missing GITHUB_REF.');
-            return;
-        }
-        const commitRef = commitSha || GITHUB_SHA;
-        if (!commitRef) {
-            core.setFailed('Missing commit_sha or GITHUB_SHA.');
-            return;
-        }
-        const currentBranch = (0, utils_1.getBranchFromRef)(GITHUB_REF);
-        const isReleaseBranch = releaseBranches
-            .split(',')
-            .some((branch) => currentBranch.match(branch));
-        const isPreReleaseBranch = preReleaseBranches
-            .split(',')
-            .some((branch) => currentBranch.match(branch));
-        const isPullRequest = (0, utils_1.isPr)(GITHUB_REF);
-        const isPrerelease = !isReleaseBranch && !isPullRequest && isPreReleaseBranch;
-        // Sanitize identifier according to
-        // https://semver.org/#backusnaur-form-grammar-for-valid-semver-versions
-        const identifier = (appendToPreReleaseTag ? appendToPreReleaseTag : currentBranch).replace(/[^a-zA-Z0-9-]/g, '-');
-        const prefixRegex = new RegExp(`^${tagPrefix}`);
-        const validTags = yield (0, utils_1.getValidTags)(prefixRegex, /true/i.test(shouldFetchAllTags));
-        const latestTag = (0, utils_1.getLatestTag)(validTags, prefixRegex, tagPrefix);
-        const latestPrereleaseTag = (0, utils_1.getLatestPrereleaseTag)(validTags, identifier, prefixRegex);
-        let commits;
-        let newVersion;
-        if (customTag) {
-            commits = yield (0, utils_1.getCommits)(latestTag.commit.sha, commitRef);
-            core.setOutput('release_type', 'custom');
-            newVersion = customTag;
+async function main() {
+    const defaultBump = core.getInput('default_bump');
+    const defaultPreReleaseBump = core.getInput('default_prerelease_bump');
+    const tagPrefix = core.getInput('tag_prefix');
+    const customTag = core.getInput('custom_tag');
+    const releaseBranches = core.getInput('release_branches');
+    const preReleaseBranches = core.getInput('pre_release_branches');
+    const appendToPreReleaseTag = core.getInput('append_to_pre_release_tag');
+    const createAnnotatedTag = /true/i.test(core.getInput('create_annotated_tag'));
+    const dryRun = core.getInput('dry_run');
+    const customReleaseRules = core.getInput('custom_release_rules');
+    const shouldFetchAllTags = core.getInput('fetch_all_tags');
+    const commitSha = core.getInput('commit_sha');
+    let mappedReleaseRules;
+    if (customReleaseRules) {
+        mappedReleaseRules = (0, utils_1.mapCustomReleaseRules)(customReleaseRules);
+    }
+    const { GITHUB_REF, GITHUB_SHA } = process.env;
+    if (!GITHUB_REF) {
+        core.setFailed('Missing GITHUB_REF.');
+        return;
+    }
+    const commitRef = commitSha || GITHUB_SHA;
+    if (!commitRef) {
+        core.setFailed('Missing commit_sha or GITHUB_SHA.');
+        return;
+    }
+    const currentBranch = (0, utils_1.getBranchFromRef)(GITHUB_REF);
+    const isReleaseBranch = releaseBranches
+        .split(',')
+        .some((branch) => currentBranch.match(branch));
+    const isPreReleaseBranch = preReleaseBranches
+        .split(',')
+        .some((branch) => currentBranch.match(branch));
+    const isPullRequest = (0, utils_1.isPr)(GITHUB_REF);
+    const isPrerelease = !isReleaseBranch && !isPullRequest && isPreReleaseBranch;
+    // Sanitize identifier according to
+    // https://semver.org/#backusnaur-form-grammar-for-valid-semver-versions
+    const identifier = (appendToPreReleaseTag ? appendToPreReleaseTag : currentBranch).replace(/[^a-zA-Z0-9-]/g, '-');
+    const prefixRegex = new RegExp(`^${tagPrefix}`);
+    const validTags = await (0, utils_1.getValidTags)(prefixRegex, /true/i.test(shouldFetchAllTags));
+    const latestTag = (0, utils_1.getLatestTag)(validTags, prefixRegex, tagPrefix);
+    const latestPrereleaseTag = (0, utils_1.getLatestPrereleaseTag)(validTags, identifier, prefixRegex);
+    let commits;
+    let newVersion;
+    if (customTag) {
+        commits = await (0, utils_1.getCommits)(latestTag.commit.sha, commitRef);
+        core.setOutput('release_type', 'custom');
+        newVersion = customTag;
+    }
+    else {
+        let previousTag;
+        let previousVersion;
+        if (!latestPrereleaseTag) {
+            previousTag = latestTag;
         }
         else {
-            let previousTag;
-            let previousVersion;
-            if (!latestPrereleaseTag) {
-                previousTag = latestTag;
-            }
-            else {
-                previousTag = (0, semver_1.gte)(latestTag.name.replace(prefixRegex, ''), latestPrereleaseTag.name.replace(prefixRegex, ''))
-                    ? latestTag
-                    : latestPrereleaseTag;
-            }
-            if (!previousTag) {
-                core.setFailed('Could not find previous tag.');
-                return;
-            }
-            previousVersion = (0, semver_1.parse)(previousTag.name.replace(prefixRegex, ''));
-            if (!previousVersion) {
-                core.setFailed('Could not parse previous tag.');
-                return;
-            }
-            core.info(`Previous tag was ${previousTag.name}, previous version was ${previousVersion.version}.`);
-            core.setOutput('previous_version', previousVersion.version);
-            core.setOutput('previous_tag', previousTag.name);
-            commits = yield (0, utils_1.getCommits)(previousTag.commit.sha, commitRef);
-            let bump = yield (0, commit_analyzer_1.analyzeCommits)({
-                releaseRules: mappedReleaseRules
-                    ? // analyzeCommits doesn't appreciate rules with a section /shrug
-                        mappedReleaseRules.map((_a) => {
-                            var { section } = _a, rest = __rest(_a, ["section"]);
-                            return (Object.assign({}, rest));
-                        })
-                    : undefined,
-            }, {
-                commits,
-                logger: { log: console.info.bind(console) },
-                cwd: process.cwd(),
-            });
-            // Determine if we should continue with tag creation based on main vs prerelease branch
-            let shouldContinue = true;
-            if (isPrerelease) {
-                if (!bump && defaultPreReleaseBump === 'false') {
-                    shouldContinue = false;
-                }
-            }
-            else {
-                if (!bump && defaultBump === 'false') {
-                    shouldContinue = false;
-                }
-            }
-            // Default bump is set to false and we did not find an automatic bump
-            if (!shouldContinue) {
-                core.debug('No commit specifies the version bump. Skipping the tag creation.');
-                return;
-            }
-            // If we don't have an automatic bump for the prerelease, just set our bump as the default
-            if (isPrerelease && !bump) {
-                bump = defaultPreReleaseBump;
-            }
-            // If somebody uses custom release rules on a prerelease branch they might create a 'preprepatch' bump.
-            const preReg = /^pre/;
-            if (isPrerelease && preReg.test(bump)) {
-                bump = bump.replace(preReg, '');
-            }
-            const releaseType = isPrerelease
-                ? `pre${bump}`
-                : bump || defaultBump;
-            core.setOutput('release_type', releaseType);
-            const incrementedVersion = (0, semver_1.inc)(previousVersion, releaseType, identifier);
-            if (!incrementedVersion) {
-                core.setFailed('Could not increment version.');
-                return;
-            }
-            if (!(0, semver_1.valid)(incrementedVersion)) {
-                core.setFailed(`${incrementedVersion} is not a valid semver.`);
-                return;
-            }
-            newVersion = incrementedVersion;
+            previousTag = (0, semver_1.gte)(latestTag.name.replace(prefixRegex, ''), latestPrereleaseTag.name.replace(prefixRegex, ''))
+                ? latestTag
+                : latestPrereleaseTag;
         }
-        core.info(`New version is ${newVersion}.`);
-        core.setOutput('new_version', newVersion);
-        const newTag = `${tagPrefix}${newVersion}`;
-        core.info(`New tag after applying prefix is ${newTag}.`);
-        core.setOutput('new_tag', newTag);
-        // Load preset directly to avoid dynamic require (ncc compatibility)
-        const loadedPreset = yield (0, conventional_changelog_conventionalcommits_1.default)({
-            types: (0, utils_1.mergeWithDefaultChangelogRules)(mappedReleaseRules),
-        });
-        const changelog = yield (0, release_notes_generator_1.generateNotes)({
-            parserOpts: loadedPreset.parserOpts,
-            writerOpts: loadedPreset.writerOpts,
+        if (!previousTag) {
+            core.setFailed('Could not find previous tag.');
+            return;
+        }
+        previousVersion = (0, semver_1.parse)(previousTag.name.replace(prefixRegex, ''));
+        if (!previousVersion) {
+            core.setFailed('Could not parse previous tag.');
+            return;
+        }
+        core.info(`Previous tag was ${previousTag.name}, previous version was ${previousVersion.version}.`);
+        core.setOutput('previous_version', previousVersion.version);
+        core.setOutput('previous_tag', previousTag.name);
+        commits = await (0, utils_1.getCommits)(previousTag.commit.sha, commitRef);
+        let bump = await (0, commit_analyzer_1.analyzeCommits)({
+            releaseRules: mappedReleaseRules
+                ? // analyzeCommits doesn't appreciate rules with a section /shrug
+                    mappedReleaseRules.map(({ section, ...rest }) => ({ ...rest }))
+                : undefined,
         }, {
             commits,
             logger: { log: console.info.bind(console) },
             cwd: process.cwd(),
-            options: {
-                repositoryUrl: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`,
-            },
-            lastRelease: { gitTag: latestTag.name },
-            nextRelease: { gitTag: newTag, version: newVersion },
         });
-        core.info(`Changelog is ${changelog}.`);
-        core.setOutput('changelog', changelog);
-        if (!isReleaseBranch && !isPreReleaseBranch) {
-            core.info('This branch is neither a release nor a pre-release branch. Skipping the tag creation.');
+        // Determine if we should continue with tag creation based on main vs prerelease branch
+        let shouldContinue = true;
+        if (isPrerelease) {
+            if (!bump && defaultPreReleaseBump === 'false') {
+                shouldContinue = false;
+            }
+        }
+        else {
+            if (!bump && defaultBump === 'false') {
+                shouldContinue = false;
+            }
+        }
+        // Default bump is set to false and we did not find an automatic bump
+        if (!shouldContinue) {
+            core.debug('No commit specifies the version bump. Skipping the tag creation.');
             return;
         }
-        if (validTags.map((tag) => tag.name).includes(newTag)) {
-            core.info('This tag already exists. Skipping the tag creation.');
+        // If we don't have an automatic bump for the prerelease, just set our bump as the default
+        if (isPrerelease && !bump) {
+            bump = defaultPreReleaseBump;
+        }
+        // If somebody uses custom release rules on a prerelease branch they might create a 'preprepatch' bump.
+        const preReg = /^pre/;
+        if (isPrerelease && preReg.test(bump)) {
+            bump = bump.replace(preReg, '');
+        }
+        const releaseType = isPrerelease
+            ? `pre${bump}`
+            : bump || defaultBump;
+        core.setOutput('release_type', releaseType);
+        const incrementedVersion = (0, semver_1.inc)(previousVersion, releaseType, identifier);
+        if (!incrementedVersion) {
+            core.setFailed('Could not increment version.');
             return;
         }
-        if (/true/i.test(dryRun)) {
-            core.info('Dry run: not performing tag action.');
+        if (!(0, semver_1.valid)(incrementedVersion)) {
+            core.setFailed(`${incrementedVersion} is not a valid semver.`);
             return;
         }
-        yield (0, github_1.createTag)(newTag, createAnnotatedTag, commitRef);
+        newVersion = incrementedVersion;
+    }
+    core.info(`New version is ${newVersion}.`);
+    core.setOutput('new_version', newVersion);
+    const newTag = `${tagPrefix}${newVersion}`;
+    core.info(`New tag after applying prefix is ${newTag}.`);
+    core.setOutput('new_tag', newTag);
+    // Load preset directly to avoid dynamic require (ncc compatibility)
+    const loadedPreset = await (0, conventional_changelog_conventionalcommits_1.default)({
+        types: (0, utils_1.mergeWithDefaultChangelogRules)(mappedReleaseRules),
     });
+    const changelog = await (0, release_notes_generator_1.generateNotes)({
+        parserOpts: loadedPreset.parserOpts,
+        writerOpts: loadedPreset.writerOpts,
+    }, {
+        commits,
+        logger: { log: console.info.bind(console) },
+        cwd: process.cwd(),
+        options: {
+            repositoryUrl: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`,
+        },
+        lastRelease: { gitTag: latestTag.name },
+        nextRelease: { gitTag: newTag, version: newVersion },
+    });
+    core.info(`Changelog is ${changelog}.`);
+    core.setOutput('changelog', changelog);
+    if (!isReleaseBranch && !isPreReleaseBranch) {
+        core.info('This branch is neither a release nor a pre-release branch. Skipping the tag creation.');
+        return;
+    }
+    if (validTags.map((tag) => tag.name).includes(newTag)) {
+        core.info('This tag already exists. Skipping the tag creation.');
+        return;
+    }
+    if (/true/i.test(dryRun)) {
+        core.info('Dry run: not performing tag action.');
+        return;
+    }
+    await (0, github_1.createTag)(newTag, createAnnotatedTag, commitRef);
 }
 exports["default"] = main;
 
@@ -291,15 +266,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.createTag = exports.compareCommits = exports.listTags = exports.getOctokitSingleton = void 0;
 const github_1 = __nccwpck_require__(3228);
@@ -317,15 +283,17 @@ exports.getOctokitSingleton = getOctokitSingleton;
 /**
  * Fetch all tags for a given repository recursively
  */
-function listTags(shouldFetchAllTags = false, fetchedTags = [], page = 1) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const octokit = getOctokitSingleton();
-        const tags = yield octokit.rest.repos.listTags(Object.assign(Object.assign({}, github_1.context.repo), { per_page: 100, page }));
-        if (tags.data.length < 100 || shouldFetchAllTags === false) {
-            return [...fetchedTags, ...tags.data];
-        }
-        return listTags(shouldFetchAllTags, [...fetchedTags, ...tags.data], page + 1);
+async function listTags(shouldFetchAllTags = false, fetchedTags = [], page = 1) {
+    const octokit = getOctokitSingleton();
+    const tags = await octokit.rest.repos.listTags({
+        ...github_1.context.repo,
+        per_page: 100,
+        page,
     });
+    if (tags.data.length < 100 || shouldFetchAllTags === false) {
+        return [...fetchedTags, ...tags.data];
+    }
+    return listTags(shouldFetchAllTags, [...fetchedTags, ...tags.data], page + 1);
 }
 exports.listTags = listTags;
 /**
@@ -333,25 +301,35 @@ exports.listTags = listTags;
  * @param baseRef - old commit
  * @param headRef - new commit
  */
-function compareCommits(baseRef, headRef) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const octokit = getOctokitSingleton();
-        core.debug(`Comparing commits (${baseRef}...${headRef})`);
-        const commits = yield octokit.rest.repos.compareCommits(Object.assign(Object.assign({}, github_1.context.repo), { base: baseRef, head: headRef }));
-        return commits.data.commits;
+async function compareCommits(baseRef, headRef) {
+    const octokit = getOctokitSingleton();
+    core.debug(`Comparing commits (${baseRef}...${headRef})`);
+    const commits = await octokit.rest.repos.compareCommits({
+        ...github_1.context.repo,
+        base: baseRef,
+        head: headRef,
     });
+    return commits.data.commits;
 }
 exports.compareCommits = compareCommits;
-function createTag(newTag, createAnnotatedTag, GITHUB_SHA) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const octokit = getOctokitSingleton();
-        let annotatedTag = undefined;
-        if (createAnnotatedTag) {
-            core.debug(`Creating annotated tag.`);
-            annotatedTag = yield octokit.rest.git.createTag(Object.assign(Object.assign({}, github_1.context.repo), { tag: newTag, message: newTag, object: GITHUB_SHA, type: 'commit' }));
-        }
-        core.debug(`Pushing new tag to the repo.`);
-        yield octokit.rest.git.createRef(Object.assign(Object.assign({}, github_1.context.repo), { ref: `refs/tags/${newTag}`, sha: annotatedTag ? annotatedTag.data.sha : GITHUB_SHA }));
+async function createTag(newTag, createAnnotatedTag, GITHUB_SHA) {
+    const octokit = getOctokitSingleton();
+    let annotatedTag = undefined;
+    if (createAnnotatedTag) {
+        core.debug(`Creating annotated tag.`);
+        annotatedTag = await octokit.rest.git.createTag({
+            ...github_1.context.repo,
+            tag: newTag,
+            message: newTag,
+            object: GITHUB_SHA,
+            type: 'commit',
+        });
+    }
+    core.debug(`Pushing new tag to the repo.`);
+    await octokit.rest.git.createRef({
+        ...github_1.context.repo,
+        ref: `refs/tags/${newTag}`,
+        sha: annotatedTag ? annotatedTag.data.sha : GITHUB_SHA,
     });
 }
 exports.createTag = createTag;
@@ -387,50 +365,57 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(7484));
+const fs = __importStar(__nccwpck_require__(9896));
 const axios_1 = __importStar(__nccwpck_require__(7269));
 const action_1 = __importDefault(__nccwpck_require__(1536));
-function validateSubscription() {
-    var _a;
-    return __awaiter(this, void 0, void 0, function* () {
-        const API_URL = `https://agent.api.stepsecurity.io/v1/github/${process.env.GITHUB_REPOSITORY}/actions/subscription`;
-        try {
-            yield axios_1.default.get(API_URL, { timeout: 3000 });
+async function validateSubscription() {
+    const eventPath = process.env.GITHUB_EVENT_PATH;
+    let repoPrivate;
+    if (eventPath && fs.existsSync(eventPath)) {
+        const eventData = JSON.parse(fs.readFileSync(eventPath, 'utf8'));
+        repoPrivate = eventData?.repository?.private;
+    }
+    const upstream = 'mathieudutour/github-tag-action';
+    const action = process.env.GITHUB_ACTION_REPOSITORY;
+    const docsUrl = 'https://docs.stepsecurity.io/actions/stepsecurity-maintained-actions';
+    core.info('');
+    core.info('\u001b[1;36mStepSecurity Maintained Action\u001b[0m');
+    core.info(`Secure drop-in replacement for ${upstream}`);
+    if (repoPrivate === false)
+        core.info('\u001b[32m\u2713 Free for public repositories\u001b[0m');
+    core.info(`\u001b[36mLearn more:\u001b[0m ${docsUrl}`);
+    core.info('');
+    if (repoPrivate === false)
+        return;
+    const serverUrl = process.env.GITHUB_SERVER_URL || 'https://github.com';
+    const body = { action: action || '' };
+    if (serverUrl !== 'https://github.com')
+        body.ghes_server = serverUrl;
+    try {
+        await axios_1.default.post(`https://agent.api.stepsecurity.io/v1/github/${process.env.GITHUB_REPOSITORY}/actions/maintained-actions-subscription`, body, { timeout: 3000 });
+    }
+    catch (error) {
+        if ((0, axios_1.isAxiosError)(error) && error.response?.status === 403) {
+            core.error(`\u001b[1;31mThis action requires a StepSecurity subscription for private repositories.\u001b[0m`);
+            core.error(`\u001b[31mLearn how to enable a subscription: ${docsUrl}\u001b[0m`);
+            process.exit(1);
         }
-        catch (error) {
-            if ((0, axios_1.isAxiosError)(error) && ((_a = error.response) === null || _a === void 0 ? void 0 : _a.status) === 403) {
-                core.error('Subscription is not valid. Reach out to support@stepsecurity.io');
-                process.exit(1);
-            }
-            else {
-                core.info('Timeout or API not reachable. Continuing to next step.');
-            }
-        }
-    });
+        core.info('Timeout or API not reachable. Continuing to next step.');
+    }
 }
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield validateSubscription();
-        try {
-            yield (0, action_1.default)();
-        }
-        catch (error) {
-            core.setFailed(error.message);
-        }
-    });
+async function run() {
+    await validateSubscription();
+    try {
+        await (0, action_1.default)();
+    }
+    catch (error) {
+        core.setFailed(error.message);
+    }
 }
 run();
 
@@ -465,15 +450,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -485,29 +461,25 @@ const semver_1 = __nccwpck_require__(2088);
 const default_release_types_1 = __importDefault(__nccwpck_require__(3876));
 const github_1 = __nccwpck_require__(6681);
 const defaults_1 = __nccwpck_require__(4168);
-function getValidTags(prefixRegex, shouldFetchAllTags) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const tags = yield (0, github_1.listTags)(shouldFetchAllTags);
-        const invalidTags = tags.filter((tag) => !prefixRegex.test(tag.name) || !(0, semver_1.valid)(tag.name.replace(prefixRegex, '')));
-        invalidTags.forEach((name) => core.debug(`Found Invalid Tag: ${name}.`));
-        const validTags = tags
-            .filter((tag) => prefixRegex.test(tag.name) && (0, semver_1.valid)(tag.name.replace(prefixRegex, '')))
-            .sort((a, b) => (0, semver_1.rcompare)(a.name.replace(prefixRegex, ''), b.name.replace(prefixRegex, '')));
-        validTags.forEach((tag) => core.debug(`Found Valid Tag: ${tag.name}.`));
-        return validTags;
-    });
+async function getValidTags(prefixRegex, shouldFetchAllTags) {
+    const tags = await (0, github_1.listTags)(shouldFetchAllTags);
+    const invalidTags = tags.filter((tag) => !prefixRegex.test(tag.name) || !(0, semver_1.valid)(tag.name.replace(prefixRegex, '')));
+    invalidTags.forEach((name) => core.debug(`Found Invalid Tag: ${name}.`));
+    const validTags = tags
+        .filter((tag) => prefixRegex.test(tag.name) && (0, semver_1.valid)(tag.name.replace(prefixRegex, '')))
+        .sort((a, b) => (0, semver_1.rcompare)(a.name.replace(prefixRegex, ''), b.name.replace(prefixRegex, '')));
+    validTags.forEach((tag) => core.debug(`Found Valid Tag: ${tag.name}.`));
+    return validTags;
 }
 exports.getValidTags = getValidTags;
-function getCommits(baseRef, headRef) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const commits = yield (0, github_1.compareCommits)(baseRef, headRef);
-        return commits
-            .filter((commit) => !!commit.commit.message)
-            .map((commit) => ({
-            message: commit.commit.message,
-            hash: commit.sha,
-        }));
-    });
+async function getCommits(baseRef, headRef) {
+    const commits = await (0, github_1.compareCommits)(baseRef, headRef);
+    return commits
+        .filter((commit) => !!commit.commit.message)
+        .map((commit) => ({
+        message: commit.commit.message,
+        hash: commit.sha,
+    }));
 }
 exports.getCommits = getCommits;
 function getBranchFromRef(ref) {
@@ -564,13 +536,16 @@ function mapCustomReleaseRules(customReleaseTypes) {
         return {
             type,
             release,
-            section: section || (defaultRule === null || defaultRule === void 0 ? void 0 : defaultRule.section),
+            section: section || defaultRule?.section,
         };
     });
 }
 exports.mapCustomReleaseRules = mapCustomReleaseRules;
 function mergeWithDefaultChangelogRules(mappedReleaseRules = []) {
-    const mergedRules = mappedReleaseRules.reduce((acc, curr) => (Object.assign(Object.assign({}, acc), { [curr.type]: curr })), Object.assign({}, defaults_1.defaultChangelogRules));
+    const mergedRules = mappedReleaseRules.reduce((acc, curr) => ({
+        ...acc,
+        [curr.type]: curr,
+    }), { ...defaults_1.defaultChangelogRules });
     return Object.values(mergedRules).filter((rule) => !!rule.section);
 }
 exports.mergeWithDefaultChangelogRules = mergeWithDefaultChangelogRules;

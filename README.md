@@ -1,3 +1,5 @@
+[![StepSecurity Maintained Action](https://raw.githubusercontent.com/step-security/maintained-actions-assets/main/assets/maintained-action-banner.png)](https://docs.stepsecurity.io/actions/stepsecurity-maintained-actions)
+
 # GitHub Tag Action
 
 A GitHub Action to automatically bump and tag master, on merge, with the latest SemVer formatted version. Works on any platform.

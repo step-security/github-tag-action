@@ -7,7 +7,8 @@
   "scripts": {
     "build": "tsc && ncc build lib/main.js -o dist --source-map --license licenses.txt",
     "test": "jest --testTimeout 10000",
-    "check": "prettier --check ."
+    "check": "prettier --check .",
+    "format": "prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -19,7 +20,7 @@
     "setup"
   ],
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "author": "step-security",
   "license": "MIT",

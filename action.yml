@@ -1,12 +1,6 @@
-<<<<<<< 9a5e3af1902054494e0d386479214f0542244ad6
-name: "GitHub Tag"
-description: "Bump and push git tag on merge"
-author: "step-security"
-=======
 name: 'GitHub Tag'
 description: 'Bump and push git tag on merge'
-author: 'Mathieu Dutour'
->>>>>>> f4c2cc5845032287507ada65eb4a3ad8aac87762
+author: 'step-security'
 outputs:
   prerelease:
     description: 'Whether the calculated version is a prerelease'
@@ -160,13 +154,8 @@ inputs:
     default: 'false'
 
 runs:
-<<<<<<< 9a5e3af1902054494e0d386479214f0542244ad6
-  using: "node24"
-  main: "dist/index.js"
-=======
   using: 'node24'
   main: 'dist/index.js'
->>>>>>> f4c2cc5845032287507ada65eb4a3ad8aac87762
 branding:
   icon: 'git-merge'
   color: 'purple'

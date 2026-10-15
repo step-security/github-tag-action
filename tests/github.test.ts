@@ -1,62 +1,3 @@
-<<<<<<< 9a5e3af1902054494e0d386479214f0542244ad6
-import { listTags } from '../src/github';
-
-jest.mock(
-  '@actions/github',
-  jest.fn().mockImplementation(() => ({
-    context: { repo: { owner: 'mock-owner', repo: 'mock-repo' } },
-    getOctokit: jest.fn().mockReturnValue({
-      rest: {
-        repos: {
-          listTags: jest
-            .fn()
-            .mockImplementation(({ page }: { page: number }) => {
-              if (page === 6) {
-                return { data: [] };
-              }
-
-              const res = [...new Array(100).keys()].map((_) => ({
-                name: `v0.0.${_ + (page - 1) * 100}`,
-                commit: { sha: 'string', url: 'string' },
-                zipball_url: 'string',
-                tarball_url: 'string',
-                node_id: 'string',
-              }));
-
-              return { data: res };
-            }),
-        },
-      },
-    }),
-  }))
-);
-
-describe('github', () => {
-  it('returns all tags', async () => {
-    const tags = await listTags(true);
-
-    expect(tags.length).toEqual(500);
-    expect(tags[499]).toEqual({
-      name: 'v0.0.499',
-      commit: { sha: 'string', url: 'string' },
-      zipball_url: 'string',
-      tarball_url: 'string',
-      node_id: 'string',
-    });
-  });
-
-  it('returns only the last 100 tags', async () => {
-    const tags = await listTags(true);
-
-    expect(tags.length).toEqual(500);
-    expect(tags[99]).toEqual({
-      name: 'v0.0.99',
-      commit: { sha: 'string', url: 'string' },
-      zipball_url: 'string',
-      tarball_url: 'string',
-      node_id: 'string',
-    });
-=======
 import { fetch } from 'undici';
 import {
   listTags,
@@ -154,7 +95,6 @@ test('force updating an annotated tag uses the annotated object SHA', async () =
   expect(mockFetch.mock.calls[2][1]).toMatchObject({
     method: 'PATCH',
     body: JSON.stringify({ sha: 'annotation', force: true }),
->>>>>>> f4c2cc5845032287507ada65eb4a3ad8aac87762
   });
 });
 test('force update creates a missing tag', async () => {

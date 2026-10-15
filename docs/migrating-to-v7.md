@@ -1,8 +1,6 @@
-[![StepSecurity Maintained Action](https://raw.githubusercontent.com/step-security/maintained-actions-assets/main/assets/maintained-action-banner.png)](https://docs.stepsecurity.io/actions/stepsecurity-maintained-actions)
-
 # Migrating from v6 to v7
 
-v7 changes version calculation and branch handling as well as the action runtime. Review the changes below before replacing `step-security/github-tag-action@v6` with `step-security/github-tag-action@v6`.
+v7 changes version calculation and branch handling as well as the action runtime. Review the changes below before replacing `step-security/github-tag-action@v6` with `step-security/github-tag-action@v7`.
 
 ## Update your workflow
 
@@ -30,7 +28,7 @@ jobs:
           fetch-depth: 0
       - name: Calculate and publish tag
         id: tag
-        uses: step-security/github-tag-action@v6
+        uses: step-security/github-tag-action@v7
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: main

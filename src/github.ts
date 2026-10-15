@@ -17,33 +17,9 @@ export function getRepository() {
   return { owner: parts[0], repo: parts[1] };
 }
 
-<<<<<<< 9a5e3af1902054494e0d386479214f0542244ad6
-/**
- * Fetch all tags for a given repository recursively
- */
-export async function listTags(
-  shouldFetchAllTags = false,
-  fetchedTags: Tag[] = [],
-  page = 1
-): Promise<Tag[]> {
-  const octokit = getOctokitSingleton();
-
-  const tags = await octokit.rest.repos.listTags({
-    ...context.repo,
-    per_page: 100,
-    page,
-  });
-
-  if (tags.data.length < 100 || shouldFetchAllTags === false) {
-    return [...fetchedTags, ...tags.data];
-  }
-
-  return listTags(shouldFetchAllTags, [...fetchedTags, ...tags.data], page + 1);
-=======
 function repositoryPath() {
   const { owner, repo } = getRepository();
   return `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`;
->>>>>>> f4c2cc5845032287507ada65eb4a3ad8aac87762
 }
 
 export async function request<T>(
@@ -110,12 +86,6 @@ export async function request<T>(
   }
 }
 
-<<<<<<< 9a5e3af1902054494e0d386479214f0542244ad6
-  const commits = await octokit.rest.repos.compareCommits({
-    ...context.repo,
-    base: baseRef,
-    head: headRef,
-=======
 export async function listTags(shouldFetchAllTags = true): Promise<Tag[]> {
   const tags: Tag[] = [];
   for (let page = 1; ; page++) {
@@ -144,7 +114,6 @@ export async function git(args: string[]) {
   const result = await getExecOutput('git', args, {
     cwd: core.getInput('working_directory') || undefined,
     silent: true,
->>>>>>> f4c2cc5845032287507ada65eb4a3ad8aac87762
   });
   return result.stdout.trim();
 }
@@ -232,16 +201,6 @@ export async function createTag(
   sha: string,
   force = false
 ) {
-<<<<<<< 9a5e3af1902054494e0d386479214f0542244ad6
-  const octokit = getOctokitSingleton();
-  let annotatedTag:
-    | Await<ReturnType<typeof octokit.rest.git.createTag>>
-    | undefined = undefined;
-  if (createAnnotatedTag) {
-    core.debug(`Creating annotated tag.`);
-    annotatedTag = await octokit.rest.git.createTag({
-      ...context.repo,
-=======
   await git(['check-ref-format', `refs/tags/${newTag}`]);
   let exists = false;
   if (force) {
@@ -255,7 +214,6 @@ export async function createTag(
   let target = sha;
   if (annotated) {
     const tag = await request<{ sha: string }>('/git/tags', 'POST', {
->>>>>>> f4c2cc5845032287507ada65eb4a3ad8aac87762
       tag: newTag,
       message: newTag,
       object: sha,
@@ -275,14 +233,6 @@ export async function createTag(
     });
 }
 
-<<<<<<< 9a5e3af1902054494e0d386479214f0542244ad6
-  core.debug(`Pushing new tag to the repo.`);
-  await octokit.rest.git.createRef({
-    ...context.repo,
-    ref: `refs/tags/${newTag}`,
-    sha: annotatedTag ? annotatedTag.data.sha : GITHUB_SHA,
-  });
-=======
 export async function createLocalTag(
   tag: string,
   sha: string,
@@ -311,5 +261,4 @@ export async function resolveCommitRef(ref: string) {
     `/commits/${encodeURIComponent(ref)}`
   );
   return commit.sha;
->>>>>>> f4c2cc5845032287507ada65eb4a3ad8aac87762
 }

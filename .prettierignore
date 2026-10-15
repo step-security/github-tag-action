@@ -1,4 +1,3 @@
-<<<<<<< 9a5e3af1902054494e0d386479214f0542244ad6
 /.github/
 /.vscode/
 /lib/
@@ -9,10 +8,4 @@
 /*.js
 /*.yml
 /*.md
-=======
 node_modules/
-lib/
-dist/
-package-lock.json
-.vscode/
->>>>>>> f4c2cc5845032287507ada65eb4a3ad8aac87762

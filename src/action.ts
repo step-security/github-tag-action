@@ -148,15 +148,7 @@ export default async function main() {
         parserOpts: config.parserOpts,
         releaseRules: rules.map(({ section, ...rule }) => rule),
       },
-<<<<<<< 9a5e3af1902054494e0d386479214f0542244ad6
-      {
-        commits,
-        logger: { log: console.info.bind(console) },
-        cwd: process.cwd(),
-      }
-=======
       { commits, logger: { log: core.info } }
->>>>>>> f4c2cc5845032287507ada65eb4a3ad8aac87762
     );
     const defaultBump = bumpInput('default_bump', 'patch');
     const defaultPre = bumpInput('default_prerelease_bump', 'prerelease');
@@ -171,76 +163,6 @@ export default async function main() {
         'default_draft_bump',
         defaultBump === 'false' ? 'patch' : defaultBump
       );
-<<<<<<< 9a5e3af1902054494e0d386479214f0542244ad6
-      return;
-    }
-
-    // If we don't have an automatic bump for the prerelease, just set our bump as the default
-    if (isPrerelease && !bump) {
-      bump = defaultPreReleaseBump;
-    }
-
-    // If somebody uses custom release rules on a prerelease branch they might create a 'preprepatch' bump.
-    const preReg = /^pre/;
-    if (isPrerelease && preReg.test(bump)) {
-      bump = bump.replace(preReg, '');
-    }
-
-    const releaseType: ReleaseType = isPrerelease
-      ? `pre${bump}`
-      : bump || defaultBump;
-    core.setOutput('release_type', releaseType);
-
-    const incrementedVersion = inc(previousVersion, releaseType, identifier);
-
-    if (!incrementedVersion) {
-      core.setFailed('Could not increment version.');
-      return;
-    }
-
-    if (!valid(incrementedVersion)) {
-      core.setFailed(`${incrementedVersion} is not a valid semver.`);
-      return;
-    }
-
-    newVersion = incrementedVersion;
-  }
-
-  core.info(`New version is ${newVersion}.`);
-  core.setOutput('new_version', newVersion);
-
-  const newTag = `${tagPrefix}${newVersion}`;
-  core.info(`New tag after applying prefix is ${newTag}.`);
-  core.setOutput('new_tag', newTag);
-
-  // Load preset directly to avoid dynamic require (ncc compatibility)
-  const loadedPreset = await conventionalChangelogConventionalcommits({
-    types: mergeWithDefaultChangelogRules(mappedReleaseRules),
-  });
-
-  const changelog = await generateNotes(
-    {
-      parserOpts: loadedPreset.parserOpts,
-      writerOpts: loadedPreset.writerOpts,
-    },
-    {
-      commits,
-      logger: { log: console.info.bind(console) },
-      cwd: process.cwd(),
-      options: {
-        repositoryUrl: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`,
-      },
-      lastRelease: { gitTag: latestTag.name },
-      nextRelease: { gitTag: newTag, version: newVersion },
-    }
-  );
-  core.info(`Changelog is ${changelog}.`);
-  core.setOutput('changelog', changelog);
-
-  if (!isReleaseBranch && !isPreReleaseBranch) {
-    core.info(
-      'This branch is neither a release nor a pre-release branch. Skipping the tag creation.'
-=======
     if (bump === 'false') return;
     releaseType = pre ? (bump.startsWith('pre') ? bump : `pre${bump}`) : bump;
     const next = nextVersion(
@@ -249,7 +171,6 @@ export default async function main() {
       bump,
       pre ? identifier : undefined,
       !!force
->>>>>>> f4c2cc5845032287507ada65eb4a3ad8aac87762
     );
     if (!next) throw new Error('Could not increment version.');
     version = next;

@@ -1,4 +1,4 @@
-name: "Test typescript-action"
+name: Test action
 on:
   pull_request:
   push:
@@ -11,7 +11,10 @@ jobs:
   test:
     permissions:
       contents: read  # for actions/checkout to fetch code
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Harden the runner (Audit all outbound calls)
         uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
@@ -21,8 +24,16 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version-file: package.json
+          node-version: '24'
+          cache: npm
       - run: npm ci
-      - run: npm run test
+      - run: npm test -- --runInBand
       - run: npm run check
+      - run: npm run typecheck
       - run: npm run build
+      - run: npm run smoke
+      - name: Verify committed distribution
+        shell: bash
+        run: |
+          git diff --exit-code -- dist
+          test -z "$(git ls-files --others --exclude-standard -- dist)"

@@ -1,12 +1,17 @@
 {
   "compilerOptions": {
     "target": "ES2022",
+<<<<<<< 9a5e3af1902054494e0d386479214f0542244ad6
     "module": "commonjs",                     /* Concatenate and emit output to single file. */
     "outDir": "./lib",                        /* Redirect output structure to the directory. */
+=======
+    "module": "commonjs",
+    "outDir": "./lib",
+>>>>>>> f4c2cc5845032287507ada65eb4a3ad8aac87762
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "**/*.test.ts"]
+  "exclude": ["node_modules", "**/*.test.ts", "dist"]
 }

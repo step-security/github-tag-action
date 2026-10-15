@@ -20,10 +20,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Bump version and push tag
         id: tag_version
-        uses: step-security/github-tag-action@v6
+        uses: step-security/github-tag-action@v7
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Create a GitHub release
@@ -191,7 +191,3 @@ Concurrent runs targeting the same version stream should be serialized with work
 - **Tag not found locally:** use `create_local_tag: true`, `push: false`, or explicitly fetch the remote tags afterward. Fetching is required if you need the exact remote annotated tag object locally.
 - **Proxy runners:** HTTP(S) proxy variables and `NO_PROXY` are supported by the bundled HTTP client. No runtime npm install is required. Extra corporate CA certificates can be provided through `NODE_EXTRA_CA_CERTS`.
 - **Legacy reports:** errors from v5/v6 should be reproduced with the new distribution before being closed; upgrading source alone does not change a published action tag.
-
-## Credits
-
-[anothrNick/github-tag-action](https://github.com/anothrNick/github-tag-action) - a similar action using a Dockerfile (hence not working on macOS)

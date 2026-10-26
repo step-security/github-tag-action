@@ -1,19 +1,12 @@
-[[IgnoredVulns]]
-id = "GHSA-g9mf-h72j-4rw9"
-reason = "undici is a transitive dependency of @actions/github v6; and interacts with trusted servers. Resource exhaustion attack is very less likely in this context."
 
 [[IgnoredVulns]]
-id = "GHSA-2mjp-6q6p-2qxm"
-reason = "undici - HTTP request smuggling via duplicate Content-Length headers requires attacker-controlled header names; @actions/github constructs headers internally."
+id = "GHSA-4qv8-2p9j-2685"
+reason = "undici bundled inside npm (via semantic-release peer dep); dev tooling only, not in dist."
 
 [[IgnoredVulns]]
-id = "GHSA-4992-7rv2-5pvq"
-reason = "undici - CRLF injection via upgrade option; @actions/github never uses the undici upgrade option."
+id = "GHSA-xjj6-f33q-929c"
+reason = "undici bundled inside npm (via semantic-release peer dep); dev tooling only, not in dist."
 
 [[IgnoredVulns]]
-id = "GHSA-v9p9-hfj2-hcw8"
-reason = "undici - WebSocket crash via invalid server_max_window_bits; this action does not use WebSockets."
-
-[[IgnoredVulns]]
-id = "GHSA-vrm6-8vpv-qv8q"
-reason = "undici - WebSocket decompression bomb causing memory exhaustion; this action does not use WebSockets."
+id = "GHSA-rxp7-6hxx-x8q5"
+reason = "ip-address bundled inside npm (via semantic-release peer dep); dev tooling only, not in dist."

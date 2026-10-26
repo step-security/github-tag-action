@@ -31,6 +31,7 @@ const mockSetFailed = jest.spyOn(core, 'setFailed');
 describe('github-tag-action', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    delete process.env.GITHUB_EVENT_NAME;
     setBranch('master');
     setCommitSha('79e0ea271c26aa152beef77c3275ff7b8f8d8274');
     loadDefaultInputs();
@@ -67,7 +68,7 @@ describe('github-tag-action', () => {
       expect(mockSetFailed).not.toBeCalled();
     });
 
-    it('does create patch tag without commits', async () => {
+    it('does not create a tag without commits', async () => {
       /*
        * Given
        */
@@ -89,11 +90,7 @@ describe('github-tag-action', () => {
       /*
        * Then
        */
-      expect(mockCreateTag).toHaveBeenCalledWith(
-        'v0.0.1',
-        expect.any(Boolean),
-        expect.any(String)
-      );
+      expect(mockCreateTag).not.toHaveBeenCalled();
       expect(mockSetFailed).not.toBeCalled();
     });
 
@@ -346,7 +343,7 @@ describe('github-tag-action', () => {
       expect(mockSetFailed).not.toBeCalled();
     });
 
-    it('does create tag when pre-release tag is newer', async () => {
+    it('does not use an unrelated prerelease as the stable baseline', async () => {
       /*
        * Given
        */
@@ -393,7 +390,7 @@ describe('github-tag-action', () => {
        * Then
        */
       expect(mockCreateTag).toHaveBeenCalledWith(
-        'v2.2.0',
+        'v1.3.0',
         expect.any(Boolean),
         expect.any(String)
       );
@@ -790,7 +787,10 @@ describe('github-tag-action', () => {
       /*
        * Then
        */
-      expect(mockSetOutput).toHaveBeenCalledWith('new_version', '1.2.4');
+      expect(mockSetOutput).toHaveBeenCalledWith(
+        'new_version',
+        '1.2.4-79e0ea2'
+      );
       expect(mockCreateTag).not.toBeCalled();
       expect(mockSetFailed).not.toBeCalled();
     });
@@ -827,7 +827,10 @@ describe('github-tag-action', () => {
       /*
        * Then
        */
-      expect(mockSetOutput).toHaveBeenCalledWith('new_version', '1.3.0');
+      expect(mockSetOutput).toHaveBeenCalledWith(
+        'new_version',
+        '1.3.0-79e0ea2'
+      );
       expect(mockCreateTag).not.toBeCalled();
       expect(mockSetFailed).not.toBeCalled();
     });
@@ -868,7 +871,10 @@ describe('github-tag-action', () => {
       /*
        * Then
        */
-      expect(mockSetOutput).toHaveBeenCalledWith('new_version', '2.0.0');
+      expect(mockSetOutput).toHaveBeenCalledWith(
+        'new_version',
+        '2.0.0-79e0ea2'
+      );
       expect(mockCreateTag).not.toBeCalled();
       expect(mockSetFailed).not.toBeCalled();
     });
